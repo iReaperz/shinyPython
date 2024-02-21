@@ -11,7 +11,6 @@ def training_ui():
         "Series Plot",
         ui.layout_columns(
             ui.card(
-                ui.div(
                     ui.input_select(
                         "usubjid",
                         "Subject ID",
@@ -22,9 +21,7 @@ def training_ui():
                             "Mosciski and Sons",
                             "Wolff Ltd",
                         ], width="500px"
-                    ), style="margin-top: 10px;"
-                ),
-                ui.div(
+                    ),
                     ui.input_select(
                         "param1",
                         "Parameter Category 1:",
@@ -35,9 +32,7 @@ def training_ui():
                             "Mosciski and Sons",
                             "Wolff Ltd",
                         ], width="500px"
-                    ), style="margin-top: 10px;"
-                ),
-                ui.div(
+                    ),
                     ui.input_select(
                         "param2",
                         "Parameter Category 2:",
@@ -48,13 +43,12 @@ def training_ui():
                             "Mosciski and Sons",
                             "Wolff Ltd",
                         ], width="500px"
-                    ), style="margin-top: 10px;"
-                )
+                    )
             ),
             ui.card(
                     ui.output_plot("series"),
-                    style="width: 1500px; height: 1000px;  border: none;"
-                ), col_widths= 2
+                    style=" height: 900px;  border: none;"
+                ),col_widths=(3,9)
         )
     )
 
