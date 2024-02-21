@@ -3,7 +3,7 @@ from typing import Callable
 import pandas as pd
 from pages.plots import plot_auc_curve, plot_precision_recall_curve, plot_score_distribution
 
-from shiny import Inputs, Outputs, Session, module, render, ui
+from shiny import Inputs, Outputs, Session, module, render, ui, reactive
 
 @module.ui
 def training_ui():
@@ -59,10 +59,13 @@ def training_server(
     session: Session,
     df: Callable[[], pd.DataFrame],
 ):
+    @reactive.Calc()
+    def filtered_data() -> pd.DataFrame:
+        return df.loc[df["account"] == input.usubjid()]
 
     @render.plot
     def series():
-        return plot_auc_curve(df(), "is_electronics", "training_score")
+        return plot_auc_curve(filtered_data(), "is_electronics", "training_score")
 
 
 @module.ui

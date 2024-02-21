@@ -9,20 +9,6 @@ df = pd.read_csv(Path(__file__).parent / "raw/scores.csv")
 app_ui = ui.page_navbar(
     training_ui("tab1"),
     data_view_ui("tab2"),
-    sidebar=ui.sidebar(
-        ui.input_select(
-            "account",
-            "Account",
-            choices=[
-                "Berge & Berge",
-                "Fritsch & Fritsch",
-                "Hintz & Hintz",
-                "Mosciski and Sons",
-                "Wolff Ltd",
-            ],
-        ),
-        width="300px",
-    ),
     header=ui.include_css(Path(__file__).parent / "assets/styles.css"),
     id="tabs",
     title="Armat Analytics",
@@ -34,8 +20,7 @@ def server(input: Inputs, output: Outputs, session: Session):
     def filtered_data() -> pd.DataFrame:
         return df.loc[df["account"] == input.account()]
 
-    print(filtered_data)
-    training_server(id="tab1", df=filtered_data)
+    training_server(id="tab1", df=df)
     data_view_server(id="tab2", df=filtered_data)
 
 
