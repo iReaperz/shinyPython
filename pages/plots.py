@@ -1,19 +1,73 @@
 from pandas import DataFrame
+import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
 
-def plot_score_distribution(df: DataFrame):
-    plot = (
-        ggplot(df, aes(x="training_score"))
-        + geom_density(fill="blue", alpha=0.3)
-        + theme_minimal()
-        + labs(title="Model scores", x="Score")
-    )
-    return plot
+def scatter_plot(df: DataFrame, df2: DataFrame, first_val, second_val):
+    if first_val.get() == second_val.get():
+        return {
+            'data': [],
+            'layout': {
+                'annotations': [{'text': 'Please choose different values for the two dropdowns.', 'showarrow': False, 'x': 2.5, 'y': 2.5, 'font': {'size': 16,}}],
+                'xaxis': {'showline': False,'showgrid': False,'zeroline': False,'showticklabels': False,'title': ''},
+                'yaxis': {'showline': False,'showgrid': False,'zeroline': False,'showticklabels': False,'title': ''}
+            }
+        }
+
+    # Filtering data
+    adlbc = df[(df['avisitn'] > 0) & (df['saffl'] == 'Y') & (df['paramcd'].isin([first_val.get(), second_val.get()]))]
+    # Calculating number of subjects in each treatment group
+    N_Subjs = df2.groupby('trta').size().reset_index(name='Count')
+
+    # Calculating reference lines
+    highs_lows = adlbc.sort_values('paramcd').groupby('paramcd').agg({'a1hi': 'min', 'a1lo': 'max'}).reset_index()
+    RefLineH1, RefLineH2 = highs_lows['a1hi'].values
+    RefLineL1, RefLineL2 = highs_lows['a1lo'].values
+
+    # Calculating maximum results
+    MaxRslts1 = adlbc.dropna(subset=['aval']).groupby(['paramcd', 'trta', 'usubjid'],).agg({'aval': 'max'}).reset_index()
+    # Merging with the number of subjects
+    MaxRslts2 = pd.merge(MaxRslts1, N_Subjs, on = "trta", how='left')
+    MaxRslts2['N_trt'] = MaxRslts2['trta'] + "(N=" + MaxRslts2['Count'].astype(str) + ")"
+    transposed = MaxRslts2.pivot(index=["usubjid","trta","N_trt"], columns='paramcd', values='aval')
+    n_levels = transposed.index.get_level_values('N_trt')
+
+    fig = px.scatter(transposed, x=second_val.get(), y=first_val.get(), facet_col=n_levels, color=n_levels, 
+                 facet_col_spacing = 0.001)
+
+    fig.add_hline(y=RefLineH2,line_width=2, line_dash="dash", line_color="gray")
+    fig.add_hline(y=RefLineL2,line_width=2, line_dash="dash", line_color="gray")
+    fig.add_vline(x=RefLineH1,line_width=2, line_dash="dash", line_color="gray")
+    fig.add_vline(x=RefLineL1,line_width=2, line_dash="dash", line_color="gray")
+
+    for i,anno in enumerate(fig['layout']['annotations']):
+        anno['text']=[f"{col_name}" for col_name in n_levels.unique()][i]
+
+    fig.update_traces(mode="markers", 
+                    hovertemplate= '<b>Subject</b>: %{customdata}<br>' +
+                                    f'<b>{second_val.get()}</b>: %{{x}}<br>' +
+                                    f'<b>{first_val.get()}</b>: %{{y}}'+
+                                    '<extra></extra>',
+                    customdata=transposed.index.get_level_values('usubjid').unique())
 
 
-def plot_auc_curve(df: DataFrame, subjid, first_val, second_val):
+    fig.update_xaxes(title_text='',ticks='inside',linecolor='black',type="log",mirror=True)
+    fig.update_yaxes(title_text='',ticks='inside',linecolor='black',type="log",mirror=True)
+
+    fig.add_annotation(showarrow=False,xref='paper', x=0.5, yref='paper',y=-0.06,text=f'Maximum post baseline {second_val.get()}', font=dict(size=14))
+    fig.add_annotation(showarrow=False,xref='paper', x=-0.03, yref='paper',y=0.5,textangle=-90,text=f'Maximum post baseline {first_val.get()}',font=dict(size=14))
+    fig.add_annotation(showarrow=False,xref='paper', x=0, yref='paper',y=-0.07,text='Each data point represents a unique subject.')
+    fig.add_annotation(showarrow=False,xref='paper', x=0, yref='paper',y=-0.09,text='Logarithmic scaling was used on both X and Y axis.')
+
+    fig.update_layout(plot_bgcolor='white',showlegend=False,
+                      title_text=f'<b>Scatter Plot of {first_val.get()} vs {second_val.get()} (Safety Analysis Set)</b>', 
+                      title_x=0.5, title_font=dict(size=20, family="Balto"), margin=dict(l=60, t=80))
+
+    return fig
+
+
+def plot_series(df: DataFrame, subjid, first_val, second_val):
     if first_val.get() == second_val.get():
         return {
             'data': [],

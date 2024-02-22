@@ -1,17 +1,18 @@
 from pathlib import Path
 
 import pandas as pd
-from pages.modules import data_view_server, data_view_ui, training_server, training_ui
+from pages.modules import scatter_server, scatter_ui, series_server, series_ui
 
 from shiny import App, Inputs, Outputs, Session, reactive, ui
 
 adlbc = pd.read_csv("raw/adlbc.csv")
 adsl = pd.read_csv("raw/adsl.csv")
+adsl.rename(columns={'trt01a': 'trta'}, inplace=True)
 
 
 app_ui = ui.page_navbar(
-    training_ui("tab1"),
-    data_view_ui("tab2"),
+    series_ui("tab1"),
+    scatter_ui("tab2"),
     header=ui.include_css("assets/styles.css"),
     id="tabs",
     title="Armat Analytics",
@@ -19,6 +20,7 @@ app_ui = ui.page_navbar(
 
 
 def server(input: Inputs, output: Outputs, session: Session):
-    training_server(id="tab1", df=adlbc)
+    series_server(id="tab1", df=adlbc)
+    scatter_server(id="tab2", df= adlbc)
 
 app = App(app_ui, server)
