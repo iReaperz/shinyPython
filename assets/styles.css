@@ -36,3 +36,25 @@
 .navbar {
     --bs-navbar-active-color: #17c6d3;
 }
+
+.navbar .nav-underline .nav-link, .navbar .nav-underline :where(ul.nav.navbar-nav > li) > a, .navbar .nav-underline .nav-tabs > li > a, .navbar .nav-underline .nav-pills > li > a {
+    padding-bottom: calc(var(--bs-navbar-padding-y, .5rem) * 0);
+    margin-bottom: calc(var(--bs-navbar-padding-y, .5rem));
+  }
+
+.nav-item{
+    font-family: Roboto;
+}
+
+.nav-link{
+    font-size: 16px;
+    font-weight: normal;
+}
+
+.navbar-collapse{
+    flex-grow: 0;
+}
+
+.navbar-brand{
+    padding-left: 40px;
+}

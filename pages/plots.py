@@ -4,12 +4,13 @@ import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 def calculate_pchg(group):
     group['pchg'] = 100 * (group['aval'] - group['base']) / group['base']
     group['MaxPchg'] = group['pchg'].max()
     return group
-
 
 def scatter_plot(df: DataFrame, df2: DataFrame, first_val, second_val):
     if first_val.get() == second_val.get():
@@ -190,7 +191,7 @@ def watter_plot(df: DataFrame, trt_selection):
 
     # Add text with increased margin
     master_fig.update_layout(height=900, title_text=f"<b>Waterfall Plot of Maximum Post Baseline Percentage Change in {trt_selection.get()}</b>",title_x=0.5,showlegend=False,
-                            plot_bgcolor='white', margin=dict(t=70,b=100), title_font=dict(size=24, family="Balto")  # Increase the bottom margin
+                            plot_bgcolor='white', margin=dict(t=70,b=100), title_font=dict(size=20, family="Balto")  # Increase the bottom margin
     )
 
     master_fig.add_annotation(showarrow=False,xref='paper', x=-0.05, yref='paper',y=0.5,textangle=-90,text="Maximum post baseline percentage change",font=dict(size=14.5))
@@ -199,3 +200,21 @@ def watter_plot(df: DataFrame, trt_selection):
                             x=0, y=-0.07, showarrow=False, xref="paper", yref="paper",font=dict(size=12))
 
     return master_fig
+
+def box_plot(df: DataFrame, trt_selection):
+    adlbc_filtred = df[(df['paramcd'] == trt_selection.get()) & (df['saffl'] == "Y") & (df['avisitn'] > 0)]
+    print(adlbc_filtred.shape[0])         
+    adlbc_plot = adlbc_filtred[["aval","avisitn","trta"]].sort_values(by="avisitn").astype({"avisitn":"str"})
+
+    fig = px.box(adlbc_plot, x = "avisitn", y = "aval", color = "trta")
+
+    fig.update_layout(xaxis_title = "Visit", yaxis_title = f"Analysis value: {trt_selection.get()}", template = "simple_white",
+                      legend = dict(orientation = "h", 
+                                    title = "", x = 0.3, y = -0.1,
+                                    font = dict(size = 12, color = "black"), bordercolor = "black", borderwidth = 1), 
+                      title_text="<b>Test Results for {} in Each Visit<b>".format(trt_selection.get()), title_x=0.5, title_font=dict(size=20, family="Balto"))
+    
+    fig.update_traces(hovertemplate= f'<b>{trt_selection.get()}/b>: %{{y}}<br>' +
+                                     '<b>Visit Number</b>: %{x}')
+    
+    return fig
