@@ -22,17 +22,17 @@ def series_ui():
                             "usubjid",
                             "Subject ID:",
                             choices=[value for value in adlbc["usubjid"].unique() if not value.startswith('_')],
-                            width="500px",
+                            width="auto",
                     ),
                     ui.input_select(
                             "param1",
                             "Parameter Category 1:",
-                            choices=[value for value in adlbc["paramcd"].unique() if not value.startswith('_')], selected= "ALT", width="500px"
+                            choices=[value for value in adlbc["paramcd"].unique() if not value.startswith('_')], selected= "ALT", width="auto"
                     ),
                     ui.input_select(
                             "param2",
                             "Parameter Category 2:",
-                            choices=[value for value in adlbc["paramcd"].unique() if not value.startswith('_')], selected= "AST", width="500px"
+                            choices=[value for value in adlbc["paramcd"].unique() if not value.startswith('_')], selected= "AST", width="auto"
                     ),
                     ui.HTML("<div class ='bottomNav'>       \
                                 <p class ='pBottom'>        \
@@ -89,12 +89,12 @@ def scatter_ui():
                     ui.input_select(
                             "param1",
                             "Parameter Category 1:",
-                            choices=[value for value in adlbc["paramcd"].unique() if not value.startswith('_')], selected= "BILI", width="500px"
+                            choices=[value for value in adlbc["paramcd"].unique() if not value.startswith('_')], selected= "BILI", width="auto"
                     ),
                     ui.input_select(
                             "param2",
                             "Parameter Category 2:",
-                            choices=[value for value in adlbc["paramcd"].unique() if not value.startswith('_')], selected= "AST", width="500px"
+                            choices=[value for value in adlbc["paramcd"].unique() if not value.startswith('_')], selected= "AST", width="auto"
                     ),
                     ui.HTML("<div class ='bottomNav'>       \
                                 <p class ='pBottom'>        \
@@ -151,7 +151,7 @@ def watter_ui():
                     ui.input_select(
                             "param1",
                             "Parameter Category:",
-                            choices=[value for value in adlbc["paramcd"].unique() if not value.startswith('_')], selected= "ALT", width="500px"
+                            choices=[value for value in adlbc["paramcd"].unique() if not value.startswith('_')], selected= "ALT", width="auto"
                     ),
                     ui.HTML("<div class ='bottomNav'>       \
                                 <p class ='pBottom'>        \
@@ -208,7 +208,7 @@ def box_ui():
                     ui.input_select(
                             "param1",
                             "Parameter Category:",
-                            choices=[value for value in adlbc["paramcd"].unique() if not value.startswith('_')], selected= "SODIUM", width="500px"
+                            choices=[value for value in adlbc["paramcd"].unique() if not value.startswith('_')], selected= "SODIUM", width="auto"
                     ),
                     ui.HTML("<div class ='bottomNav'>       \
                                 <p class ='pBottom'>        \
