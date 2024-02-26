@@ -34,14 +34,15 @@ def series_ui():
                             "Parameter Category 2:",
                             choices=[value for value in adlbc["paramcd"].unique() if not value.startswith('_')], selected= "AST", width="auto"
                     ),
+                    ui.div(style = "position: relative;height: 40px;"),
                     ui.HTML("<div class ='bottomNav'>       \
-                                <p class ='pBottom'>        \
-                                    Follow Us:              \
-                                    <a href='https://www.google.com' class = 'img'> <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/LinkedIn_icon.svg/108px-LinkedIn_icon.svg.png' width='15' height='15'> </a>\
-                                    <a href='https://www.google.com' class = 'img'> <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/900px-Octicons-mark-github.svg.png?20180806170715'  width='15' height='15'> </a>\
-                                    <a href='https://www.google.com' class = 'img'> <img src='https://upload.wikimedia.org/wikipedia/commons/e/ec/Medium_logo_Monogram.svg' width='15' height='15'> </a>\
-                                </p>                        \
-                            </div>")
+                                    <p class ='pBottom'>        \
+                                        Follow Us:              \
+                                        <a href='https://www.google.com' class = 'img'> <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/LinkedIn_icon.svg/108px-LinkedIn_icon.svg.png' width='15' height='15'> </a>\
+                                        <a href='https://www.google.com' class = 'img'> <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/900px-Octicons-mark-github.svg.png?20180806170715'  width='15' height='15'> </a>\
+                                        <a href='https://www.google.com' class = 'img'> <img src='https://upload.wikimedia.org/wikipedia/commons/e/ec/Medium_logo_Monogram.svg' width='15' height='15'> </a>\
+                                    </p>                        \
+                                </div>")
                     ),
             ui.card(
                     output_widget("series"),
