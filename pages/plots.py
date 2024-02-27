@@ -4,6 +4,7 @@ import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+from lifelines import KaplanMeierFitter
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
@@ -202,8 +203,7 @@ def watter_plot(df: DataFrame, trt_selection):
     return master_fig
 
 def box_plot(df: DataFrame, trt_selection):
-    adlbc_filtred = df[(df['paramcd'] == trt_selection.get()) & (df['saffl'] == "Y") & (df['avisitn'] > 0)]
-    print(adlbc_filtred.shape[0])         
+    adlbc_filtred = df[(df['paramcd'] == trt_selection.get()) & (df['saffl'] == "Y") & (df['avisitn'] > 0)]        
     adlbc_plot = adlbc_filtred[["aval","avisitn","trta"]].sort_values(by="avisitn").astype({"avisitn":"str"})
 
     fig = px.box(adlbc_plot, x = "avisitn", y = "aval", color = "trta")
@@ -217,4 +217,60 @@ def box_plot(df: DataFrame, trt_selection):
     fig.update_traces(hovertemplate= f'<b>{trt_selection.get()}/b>: %{{y}}<br>' +
                                      '<b>Visit Number</b>: %{x}')
     
+    return fig
+
+def survival_plot(df:DataFrame):
+    data = df[df["saffl"] == "Y"]
+    data['cnsr'] = data['cnsr'].replace({0: 1, 1: 0})
+    colors = ["darkturquoise", "yellowgreen", "gold"]
+    traces = []
+
+    kmf = KaplanMeierFitter()
+
+    fig = go.Figure()
+    for i, trt in enumerate(data["trta"].unique()):
+        f = data[data["trta"] == trt]
+        T = f['aval']
+        C = f['cnsr']
+        kmf.fit(T, event_observed=C, label=trt)
+        traces.append(kmf.survival_function_)
+
+        # Add Kaplan-Meier curve for Placebo group
+        fig.add_trace(go.Scatter(x=traces[i].index,
+                                y=traces[i][trt],
+                                name=trt,
+                                line=dict(color=colors[i],shape='hv'),
+                                showlegend=True))
+
+        for t, c in zip(T, C):
+            if not c:
+                fig.add_trace(go.Scatter(x=[t],
+                                        y=[traces[i].loc[t, trt]],
+                                        mode='markers',
+                                        name = trt,
+                                        marker=dict(symbol='circle-open', size=8, color=colors[i]),
+                                        showlegend=False))
+
+    fig.add_shape(go.layout.Shape(
+                type='rect', xref='x', yref='y',
+                x0=-10, y0=0, x1=data["aval"].max() + 15, y1=1.1,
+                line={'width': 1}
+            ))
+
+    fig.update_layout(title='<b>Survival Analysis for Time to First Dermatologic Event</b>',
+                    title_x =0.5,
+                    title_font=dict(size=20, family="Balto"),
+                    margin=dict(t=50,b=100),
+                    plot_bgcolor='white',
+                    xaxis_title='<b>Time to Demotologic Event or End of Study (days)</b>',
+                    yaxis_title='<b>Survival Probability</b>',
+                    legend=dict(x=0.997, y = 0.99, xanchor='right', yanchor='top',
+                                font = dict(size = 12, color = "black"), bordercolor = "black", borderwidth = 1))
+
+    fig.update_xaxes(showgrid=True,ticks="outside",tickson="boundaries",ticklen=3)
+    fig.update_yaxes(showgrid=True,ticks="outside",tickson="boundaries",ticklen=3)
+
+    fig.add_annotation(text="<i><b>Analysis was done using Kaplan-Meier`s estimate.</b></i>", 
+                                x=0, y=-0.13, showarrow=False, xref="paper", yref="paper",font=dict(size=11))
+
     return fig

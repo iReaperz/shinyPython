@@ -1,7 +1,7 @@
 from typing import Callable
 
 import pandas as pd
-from pages.plots import plot_series, scatter_plot, watter_plot, box_plot
+from pages.plots import plot_series, scatter_plot, watter_plot, box_plot, survival_plot
 
 from shiny import Inputs, Outputs, Session, module, render, ui, reactive
 from shinywidgets import output_widget, render_widget  
@@ -241,6 +241,48 @@ def box_server(
     @render_widget
     def box():
         return box_plot(filtered_data(),input.param1)
+    
+    @render.image
+    def linked():
+        img: ImgData = {"src": str("assets/linked.png"), "width": "20px", "height":"20px"}
+        return img
+    
+    @render.image
+    def git():
+        img: ImgData = {"src": str("assets/git.png"), "width": "20px", "height":"20px"}
+        return img
+    
+    @render.image
+    def med():
+        img: ImgData = {"src": str("assets/med.png"), "width": "20px", "height":"20px"}
+        return img
+
+@module.ui
+def survival_ui():
+    return ui.nav_panel(
+        "Survival Plot",
+        ui.layout_columns(
+            ui.card(
+                    output_widget("survival"),
+                    style=" height: 900px;  border: none;"
+                ),col_widths=(12)
+        )
+)
+
+@module.server
+def survival_server(
+    input: Inputs,
+    output: Outputs,
+    session: Session,
+    df: Callable[[], pd.DataFrame],
+):
+    @reactive.Calc()
+    def filtered_data() -> pd.DataFrame:
+        return df
+
+    @render_widget
+    def survival():
+        return survival_plot(filtered_data())
     
     @render.image
     def linked():
