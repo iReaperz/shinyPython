@@ -97,6 +97,7 @@ def scatter_ui():
                             "Parameter Category 2:",
                             choices=[value for value in adlbc["paramcd"].unique() if not value.startswith('_')], selected= "AST", width="auto"
                     ),
+                    ui.div(style = "position: relative;height: 40px;"),
                     ui.HTML("<div class ='bottomNav'>       \
                                 <p class ='pBottom'>        \
                                     Follow Us:              \
@@ -154,6 +155,7 @@ def watter_ui():
                             "Parameter Category:",
                             choices=[value for value in adlbc["paramcd"].unique() if not value.startswith('_')], selected= "ALT", width="auto"
                     ),
+                    ui.div(style = "position: relative;height: 40px;"),
                     ui.HTML("<div class ='bottomNav'>       \
                                 <p class ='pBottom'>        \
                                     Follow Us:              \
@@ -211,6 +213,7 @@ def box_ui():
                             "Parameter Category:",
                             choices=[value for value in adlbc["paramcd"].unique() if not value.startswith('_')], selected= "SODIUM", width="auto"
                     ),
+                    ui.div(style = "position: relative;height: 40px;"),
                     ui.HTML("<div class ='bottomNav'>       \
                                 <p class ='pBottom'>        \
                                     Follow Us:              \
@@ -261,11 +264,9 @@ def box_server(
 def survival_ui():
     return ui.nav_panel(
         "Survival Plot",
-        ui.layout_columns(
             ui.card(
                     output_widget("survival"),
-                    style=" height: 900px;  border: none;"
-                ),col_widths=(12)
+                    style=" height: 900px;  border: none;", class_="survival_card"
         )
 )
 
@@ -283,18 +284,3 @@ def survival_server(
     @render_widget
     def survival():
         return survival_plot(filtered_data())
-    
-    @render.image
-    def linked():
-        img: ImgData = {"src": str("assets/linked.png"), "width": "20px", "height":"20px"}
-        return img
-    
-    @render.image
-    def git():
-        img: ImgData = {"src": str("assets/git.png"), "width": "20px", "height":"20px"}
-        return img
-    
-    @render.image
-    def med():
-        img: ImgData = {"src": str("assets/med.png"), "width": "20px", "height":"20px"}
-        return img
