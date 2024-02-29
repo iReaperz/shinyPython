@@ -68,6 +68,10 @@
     padding-left: 40px;
 }
 
+.navbar-toggler:hover{
+    background-color: rgb(84, 197, 208);
+}
+
 @media (max-width: 1400px) {
     .grid .g-col-md-3  {
         grid-column: 1 / -1;
@@ -89,6 +93,9 @@
         .survival_card {
           width: 800px; 
         }
+        .container-fluid{
+            width: 800px;   
+        }
     }
   }
 
@@ -97,3 +104,4 @@
     color:rgb(17, 86, 103);
     font-family: Roboto;
 }
+
