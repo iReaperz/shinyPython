@@ -274,3 +274,162 @@ def survival_plot(df:DataFrame):
                                 x=0, y=-0.13, showarrow=False, xref="paper", yref="paper",font=dict(size=11))
 
     return fig
+
+def swimmer_plot(df: DataFrame, df2: DataFrame, aedecod):
+    merged_data = pd.merge(df[(df["aedecod"] == aedecod.get()) & (df["saffl"] == "Y")],
+                       df2.loc[:, ["usubjid", "rfpendtc"]],on="usubjid")
+
+    # Удаление дублирующихся строк
+    ErthmResp = merged_data.sort_values(by=['usubjid', 'aedecod', 'astdy', 'aendy', 'aesev'], ascending=[True, True, True, False, False]) \
+                .drop_duplicates(subset=['usubjid', 'aedecod', 'astdy'], keep='first')
+
+    # Максимальное количество появлений AE по всем субъектам
+    NofOccrncs = ErthmResp.sort_values(by='usubjid') \
+                    .assign(occrnc=lambda x: x.groupby('usubjid').cumcount() + 1)
+
+    # Для начала инцидента
+    ErthmRespStrt = NofOccrncs[['usubjid', 'aedecod', 'rfpendtc', 'trtsdt', 'trta', 'occrnc', 'astdy']] \
+                    .pivot_table(index=['usubjid', 'aedecod', 'rfpendtc', 'trtsdt', 'trta'], columns='occrnc', values='astdy', aggfunc='first') \
+                    .add_prefix('start_') \
+                    .reset_index()  # добавляем reset_index для возврата 'usubjid' в качестве столбца
+
+    # Для конца инцидента
+    ErthmRespEnd = NofOccrncs[['usubjid', 'aedecod', 'rfpendtc', 'trtsdt', 'trta', 'occrnc', 'aendy']] \
+                    .pivot_table(index=['usubjid', 'aedecod', 'rfpendtc', 'trtsdt', 'trta'], columns='occrnc', values='aendy', aggfunc='first') \
+                    .add_prefix('end_') \
+                    .reset_index()  # добавляем reset_index для возврата 'usubjid' в качестве столбца
+
+    # Для оценки тяжести инцидента
+    ErthmRespSev = NofOccrncs[['usubjid', 'aedecod', 'rfpendtc', 'trtsdt', 'trta', 'occrnc', 'aesev']] \
+                    .pivot_table(index=['usubjid', 'aedecod', 'rfpendtc', 'trtsdt', 'trta'], columns='occrnc', values='aesev', aggfunc='first') \
+                    .add_prefix('AeSev_') \
+                    .reset_index()  # добавляем reset_index для возврата 'usubjid' в качеств
+
+    PrePlot1 = pd.merge(pd.merge(ErthmRespStrt.reset_index(), ErthmRespEnd.reset_index(), on="usubjid", how= "outer"), ErthmRespSev.reset_index(), on="usubjid", how= "outer")
+    PrePlot1["end_2"] = np.nan
+    cols = ["usubjid", "start", "AEend", "AeSev", "bar_start", "bar_end"]
+    PrePlot3 = pd.DataFrame(columns=cols)
+
+    # copying PrePlot1 to keep PrePlot2
+
+    max_occ = NofOccrncs['occrnc'].max()
+
+    for i in range(1, max_occ + 1):
+        AEend = f'AEend{i}'
+        starts = f'start_{i}'
+        ends = f'end_{i}'
+        chkEnd = f'chkEnd{i}'
+        chk = f'chk{i}'
+        endPoint = f'endPoint{i}'
+
+        PrePlot1 = PrePlot1.assign(chkEnd_=(~PrePlot1[ends].isna()).astype(int))
+        PrePlot1[AEend] = np.where(~PrePlot1[starts].isna() & PrePlot1[ends].isna(),
+                                    (pd.to_datetime(PrePlot1['rfpendtc'].str[:10]) - pd.to_datetime(PrePlot1['trtsdt'])).dt.days + 1,
+                                    PrePlot1[ends])
+        PrePlot1[endPoint] = np.where(~PrePlot1[starts].isna() & PrePlot1[ends].isna(), 'FILLEDARROW', np.nan)
+        PrePlot1[chkEnd] = PrePlot1.groupby('usubjid')['chkEnd_'].cumsum()
+        PrePlot1[chk] = np.where(PrePlot1[ends].isna(), 1, np.nan)
+
+
+
+    # Extracting columns containing "endPoint" and coalescing them into a single column
+    end_point_cols = [col for col in PrePlot1.columns if 'endPoint' in col]
+    PrePlot1['barEndPointr'] = PrePlot1[end_point_cols].apply(lambda row: row.dropna().iloc[0], axis=1)
+
+    # Calculating bar_end column
+    PrePlot1['bar_start'] = 0
+    PrePlot1['bar_end'] = (pd.to_datetime(PrePlot1['rfpendtc'].str[:10]) - pd.to_datetime(PrePlot1['trtsdt'])).dt.days + 1
+    PrePlot2 = PrePlot1.copy()
+    # Dropping unnecessary columns
+    cols_to_drop = [col for col in PrePlot1.columns if 'endPoint' in col or 'chkEnd_' in col]
+    PrePlot1 = PrePlot1.drop(columns=cols_to_drop)
+
+
+    for i in range(1, max_occ + 1):
+        AEend = "AEend" + str(i)
+        starts = "start_" + str(i)
+        AeSev = "AeSev_" + str(i)
+        chk = "chk" + str(i)
+        
+        # Select relevant columns, filter out rows with NaN starts, and rename columns
+        temp_df = PrePlot1[['usubjid', starts, AEend, AeSev, chk]].dropna(subset=[starts])
+        temp_df = temp_df.rename(columns={starts: 'start', AEend: 'AEend', AeSev: 'AeSev', chk: 'chk'})
+        
+        # Check if temp_df is not empty before concatenating
+        if not temp_df.empty:
+            # Append to PrePlot3
+            PrePlot3 = pd.concat([PrePlot3, temp_df], ignore_index=True)
+
+    PrePlot3 = pd.merge(PrePlot3[["usubjid", "start", "AEend", "AeSev"]], PrePlot2[["usubjid", "bar_end", "bar_start"]], on="usubjid", how= "left")
+
+    colors = ["#FF7F50", "#998547", "#803009"]
+    colorts_triangle = {"MILD" : "yellow", "MODERATE" : "green", "SEVERE": "blue"}
+
+    # Сортируем DataFrame по столбцу 'bar_end' в обратном порядке
+    sorted_df = PrePlot2.sort_values(by='bar_end', ascending=False)
+    # sorted_df.loc[(sorted_df["endPoint1"] == "FILLEDARROW") | (sorted_df["endPoint2"] == "FILLEDARROW"), "barEndPointr"] = "FILLEDARROW"
+
+    # Строим график
+    fig = px.bar(sorted_df, x="bar_end", y="usubjid", color="trta", color_discrete_sequence=colors,orientation="h",
+        category_orders={"usubjid": sorted_df["usubjid"].unique().tolist()}
+    )
+
+    # Добавляем аннотацию
+    for i, sev in enumerate(PrePlot3["AeSev"].unique()):
+        fig.add_trace(
+            go.Scatter( x=PrePlot3["start"][(PrePlot3["AeSev"] == sev)], y=PrePlot3["usubjid"][(PrePlot3["AeSev"] == sev)],
+            mode='markers', name=sev, marker=dict(symbol='circle', size=6, color=colorts_triangle[sev]),
+            showlegend=True, legendgroup="group",
+            legendgrouptitle=dict(text="<b>Severity</b>",font=dict(family="Bold",size = 16)))
+    )
+
+    for i, usubjid in enumerate(PrePlot3["usubjid"]):
+        ae_end_values = PrePlot3["AEend"][PrePlot3["usubjid"] == usubjid]
+        bar_end_values = PrePlot3["bar_end"][PrePlot3["usubjid"] == usubjid]
+        if (ae_end_values[i] == bar_end_values[i]):
+            size = 0.1
+        else:
+            size = 6
+            
+        fig.add_trace(go.Scatter(
+            x=ae_end_values, y=[usubjid], mode='markers', name=PrePlot3["AeSev"][PrePlot3["usubjid"] == usubjid].iloc[0],  
+            marker=dict(symbol='diamond', size=size, color = colorts_triangle[PrePlot3["AeSev"][PrePlot3["usubjid"] == usubjid].iloc[0]]),
+            showlegend=False
+        ))
+        
+    for usubjid in PrePlot3["usubjid"]:
+        start_points = PrePlot3.loc[PrePlot3["usubjid"] == usubjid, "start"]
+        end_points = PrePlot3.loc[PrePlot3["usubjid"] == usubjid, "AEend"]
+        ae_sev = PrePlot3.loc[PrePlot3["usubjid"] == usubjid, "AeSev"].iloc[0]
+        for start_point, end_point in zip(start_points, end_points):
+            fig.add_trace(go.Scatter(
+                x=[start_point, end_point],
+                y=[usubjid, usubjid],
+                mode='lines',
+                name=f'Line for {usubjid}',
+                line=dict(color=colorts_triangle[ae_sev], width=1),
+                showlegend=False
+            ))
+
+    for i, trt in enumerate(sorted_df["trta"].unique()):
+        fig.add_trace(go.Scatter(
+            x=sorted_df["bar_end"][(sorted_df["trta"] == trt) & (sorted_df["barEndPointr"] == "FILLEDARROW")],
+            y=sorted_df["usubjid"][(sorted_df["trta"] == trt) & (sorted_df["barEndPointr"] == "FILLEDARROW")],
+            mode='markers', name=trt, marker=dict(symbol='triangle-right', size=22, color=colors[i]),
+            showlegend=False
+        ))
+
+    fig.update_layout(
+        title='<b>Severity and Duration of Application Site Erythema for Each Subject</b>',title_x =0.5,title_font=dict(size=20, family="Balto"),
+        xaxis_title="",yaxis=dict(title ="",showticklabels=False, showgrid=True,ticks="outside",tickson="boundaries",ticklen=3),
+        xaxis = dict(showgrid=True,ticks="outside",tickson="boundaries",ticklen=3),template = "simple_white",
+        legend = dict(title = "<b>Treatment</b>",groupclick="toggleitem",font = dict(size = 12, color = "black",family="Balto"), bordercolor = "black", borderwidth = 1),
+        margin=dict(b=100),
+    )
+
+
+    fig.add_annotation(text="<i><b>Each bar represents one Subject in study</b></i>", 
+                                    x=0, y=-0.07, showarrow=False, xref="paper", yref="paper",font=dict(size=11))
+
+    return fig
+

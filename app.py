@@ -1,13 +1,15 @@
 from pathlib import Path
 
 import pandas as pd
-from pages.modules import scatter_server, scatter_ui, series_server, series_ui, watter_server, watter_ui, box_ui, box_server, survival_ui, survival_server
+from pages.modules import scatter_server, scatter_ui, series_server, series_ui, watter_server, watter_ui, box_ui, box_server, survival_ui, survival_server, swimmer_ui, swimmer_server
 
 from shiny import App, Inputs, Outputs, Session, reactive, ui
 
 adlbc = pd.read_csv("raw/adlbc.csv")
 adsl = pd.read_csv("raw/adsl.csv")
 adtte = pd.read_csv("raw/adtte.csv")
+adae = pd.read_csv("raw/adae.csv")
+dm = pd.read_csv("raw/dm.csv")
 adsl.rename(columns={'trt01a': 'trta'}, inplace=True)
 
 
@@ -17,6 +19,7 @@ app_ui = ui.page_navbar(
     watter_ui("tab3"),
     box_ui("tab4"),
     survival_ui("tab5"),
+    swimmer_ui("tab6"),
     header=ui.include_css("assets/styles.css"),
     id="tabs",
     title=ui.tags.a(
@@ -36,5 +39,6 @@ def server(input: Inputs, output: Outputs, session: Session):
     watter_server(id="tab3", df= adlbc)
     box_server(id="tab4", df= adlbc)
     survival_server(id="tab5", df = adtte)
+    swimmer_server(id = "tab6", df= dm)
 
 app = App(app_ui, server)

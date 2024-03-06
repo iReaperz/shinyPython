@@ -1,7 +1,7 @@
 from typing import Callable
 
 import pandas as pd
-from pages.plots import plot_series, scatter_plot, watter_plot, box_plot, survival_plot
+from pages.plots import plot_series, scatter_plot, watter_plot, box_plot, survival_plot, swimmer_plot
 
 from shiny import Inputs, Outputs, Session, module, render, ui, reactive
 from shinywidgets import output_widget, render_widget  
@@ -10,6 +10,7 @@ from htmltools import HTML, div
 
 adlbc = pd.read_csv("raw/adlbc.csv")
 adsl = pd.read_csv("raw/adsl.csv")
+adae = pd.read_csv("raw/adae.csv")
 adsl.rename(columns={'trt01a': 'trta'}, inplace=True)
 
 @module.ui
@@ -298,3 +299,65 @@ def survival_server(
     def med():
         img: ImgData = {"src": str("assets/med.png"), "width": "20px", "height":"20px"}
         return img
+
+@module.ui
+def swimmer_ui():
+    return ui.nav_panel(
+        "Swimmer Plot",
+        ui.layout_columns(
+            ui.card(
+                ui.input_select(
+                    "decod",
+                    "Parameter Category",
+                    choices=[str(value) for value in adae["aedecod"].unique() if isinstance(value, str) and not value.startswith('_')],
+                    selected="APPLICATION SITE ERYTHEMA",
+                    width="auto"
+                ),
+                ui.div(style="position: relative;height: 40px;"),
+                ui.HTML("<div class ='bottomNav'>       \
+                        <p class ='pBottom'>        \
+                            Follow Us:              \
+                            <a href='https://www.google.com' class = 'img'> <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/LinkedIn_icon.svg/108px-LinkedIn_icon.svg.png' width='15' height='15'> </a>\
+                            <a href='https://www.google.com' class = 'img'> <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/900px-Octicons-mark-github.svg.png?20180806170715'  width='15' height='15'> </a>\
+                            <a href='https://www.google.com' class = 'img'> <img src='https://upload.wikimedia.org/wikipedia/commons/e/ec/Medium_logo_Monogram.svg' width='15' height='15'> </a>\
+                        </p>                        \
+                    </div>")
+            ),
+            ui.card(
+                output_widget("swimmer"),
+                style=" height: 900px;  border: none;"
+            ), col_widths=(3, 9)
+        )
+    )
+
+
+@module.server
+def swimmer_server(
+    input: Inputs,
+    output: Outputs,
+    session: Session,
+    df: Callable[[], pd.DataFrame],
+):
+    @reactive.Calc()
+    def filtered_data() -> pd.DataFrame:
+        return df
+
+    @render_widget
+    def swimmer():
+        return swimmer_plot(adae, filtered_data(), input.decod)
+    
+    @render.image
+    def linked():
+        img: ImgData = {"src": str("assets/linked.png"), "width": "20px", "height":"20px"}
+        return img
+    
+    @render.image
+    def git():
+        img: ImgData = {"src": str("assets/git.png"), "width": "20px", "height":"20px"}
+        return img
+    
+    @render.image
+    def med():
+        img: ImgData = {"src": str("assets/med.png"), "width": "20px", "height":"20px"}
+        return img
+    
