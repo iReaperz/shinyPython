@@ -25,12 +25,11 @@ app_ui = ui.page_navbar(
     title=ui.tags.a(
         ui.tags.img(
             src="https://www.armatanalytics.com/_nuxt/img/Layer2.62f69f4.svg",
-            height="100%",
-            width="100%"
         ),
         href="https://www.armatanalytics.com/"
     )
 )
+
 
 
 def server(input: Inputs, output: Outputs, session: Session):

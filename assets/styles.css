@@ -2,6 +2,15 @@
     border: 1px solid rgb(158, 158, 158);
 }
 
+.bg-light {
+    --bs-bg-opacity: 1;
+    background-color: white !important; 
+}
+
+.navbar-toggler, .navbar-toggle {
+    color: rgb(84, 197, 208);
+}
+
 .bottomNav {
     position:absolute;
     bottom:0px;
@@ -59,28 +68,40 @@
     padding-left: 40px;
 }
 
+.navbar-toggler:hover{
+    background-color: rgb(84, 197, 208);
+}
+
 @media (max-width: 1400px) {
     .grid .g-col-md-3  {
         grid-column: 1 / -1;
     }
 
-    @media (min-width: 570px) {
+    @media (min-width: 750px) {
         .grid .g-col-md-9 {
           grid-column: auto/span 12;
         }
       }
+    
+    @media (max-width: 751px) {
+        .grid .g-col-md-9 {
+          width: 800px;
+        }
+        .grid .g-col-md-3  {
+          width: 800px;
+        }
+        .survival_card {
+          width: 800px; 
+        }
+        .container-fluid{
+            width: 800px;   
+        }
+    }
   }
 
-  @media (max-width: 571px) {
-    .grid .g-col-md-3  {
-        grid-column: 1 / -1;
-    }
-    .grid .g-col-md-9 {
-          grid-column:auto;
-    }
-  } 
 
 .form-select {
     color:rgb(17, 86, 103);
     font-family: Roboto;
 }
+
