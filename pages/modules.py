@@ -284,7 +284,6 @@ def survival_server(
 
     @render_widget
     def survival():
-<<<<<<< HEAD
         return survival_plot(filtered_data())
     
     @render.image
@@ -363,6 +362,3 @@ def swimmer_server(
         img: ImgData = {"src": str("assets/med.png"), "width": "20px", "height":"20px"}
         return img
     
-=======
-        return survival_plot(filtered_data())
->>>>>>> 63af88578c9cd7326d46b7b0240fdc0ef4a70fff
