@@ -67,21 +67,6 @@ def series_server(
     def series():
         return plot_series(filtered_data(), input.usubjid, input.param1, input.param2)
     
-    @render.image
-    def linked():
-        img: ImgData = {"src": str("assets/linked.png"), "width": "20px", "height":"20px"}
-        return img
-    
-    @render.image
-    def git():
-        img: ImgData = {"src": str("assets/git.png"), "width": "20px", "height":"20px"}
-        return img
-    
-    @render.image
-    def med():
-        img: ImgData = {"src": str("assets/med.png"), "width": "20px", "height":"20px"}
-        return img
-    
 @module.ui
 def scatter_ui():
     return ui.nav_panel(
@@ -130,21 +115,6 @@ def scatter_server(
     def scatter():
         return scatter_plot(filtered_data(), adsl, input.param1, input.param2)
     
-    @render.image
-    def linked():
-        img: ImgData = {"src": str("assets/linked.png"), "width": "20px", "height":"20px"}
-        return img
-    
-    @render.image
-    def git():
-        img: ImgData = {"src": str("assets/git.png"), "width": "20px", "height":"20px"}
-        return img
-    
-    @render.image
-    def med():
-        img: ImgData = {"src": str("assets/med.png"), "width": "20px", "height":"20px"}
-        return img
-
 @module.ui
 def watter_ui():
     return ui.nav_panel(
@@ -187,21 +157,6 @@ def watter_server(
     @render_widget
     def watter():
         return watter_plot(filtered_data(),input.param1)
-    
-    @render.image
-    def linked():
-        img: ImgData = {"src": str("assets/linked.png"), "width": "20px", "height":"20px"}
-        return img
-    
-    @render.image
-    def git():
-        img: ImgData = {"src": str("assets/git.png"), "width": "20px", "height":"20px"}
-        return img
-    
-    @render.image
-    def med():
-        img: ImgData = {"src": str("assets/med.png"), "width": "20px", "height":"20px"}
-        return img
 
 @module.ui
 def box_ui():
@@ -246,20 +201,6 @@ def box_server(
     def box():
         return box_plot(filtered_data(),input.param1)
     
-    @render.image
-    def linked():
-        img: ImgData = {"src": str("assets/linked.png"), "width": "20px", "height":"20px"}
-        return img
-    
-    @render.image
-    def git():
-        img: ImgData = {"src": str("assets/git.png"), "width": "20px", "height":"20px"}
-        return img
-    
-    @render.image
-    def med():
-        img: ImgData = {"src": str("assets/med.png"), "width": "20px", "height":"20px"}
-        return img
 
 @module.ui
 def survival_ui():
@@ -286,20 +227,6 @@ def survival_server(
     def survival():
         return survival_plot(filtered_data())
     
-    @render.image
-    def linked():
-        img: ImgData = {"src": str("assets/linked.png"), "width": "20px", "height":"20px"}
-        return img
-    
-    @render.image
-    def git():
-        img: ImgData = {"src": str("assets/git.png"), "width": "20px", "height":"20px"}
-        return img
-    
-    @render.image
-    def med():
-        img: ImgData = {"src": str("assets/med.png"), "width": "20px", "height":"20px"}
-        return img
 
 @module.ui
 def swimmer_ui():
@@ -347,18 +274,4 @@ def swimmer_server(
     def swimmer():
         return swimmer_plot(adae, filtered_data(), input.decod)
     
-    @render.image
-    def linked():
-        img: ImgData = {"src": str("assets/linked.png"), "width": "20px", "height":"20px"}
-        return img
-    
-    @render.image
-    def git():
-        img: ImgData = {"src": str("assets/git.png"), "width": "20px", "height":"20px"}
-        return img
-    
-    @render.image
-    def med():
-        img: ImgData = {"src": str("assets/med.png"), "width": "20px", "height":"20px"}
-        return img
     

@@ -15,14 +15,13 @@ def calculate_pchg(group):
 
 def scatter_plot(df: DataFrame, df2: DataFrame, first_val, second_val):
     if first_val.get() == second_val.get():
-        return {
-            'data': [],
-            'layout': {
-                'annotations': [{'text': 'Please choose different values for the two dropdowns.', 'showarrow': False, 'x': 2.5, 'y': 2.5, 'font': {'size': 16,}}],
-                'xaxis': {'showline': False,'showgrid': False,'zeroline': False,'showticklabels': False,'title': ''},
-                'yaxis': {'showline': False,'showgrid': False,'zeroline': False,'showticklabels': False,'title': ''}
-            }
-        }
+        fig = go.Figure()
+        # Add a red cross symbol in the middle
+        fig.add_annotation(x=2.5, y=2.5, text="\u274C",font=dict(size=100),showarrow=False,)
+        fig.add_annotation(x=2.5, y=4, text="Please select two different Parameter Categories ", font=dict(color="#115667", size=24), showarrow=False)
+        # Set layout properties
+        fig.update_layout(xaxis=dict(visible=False),yaxis=dict(visible=False),plot_bgcolor="white",)
+        return fig
 
     # Filtering data
     adlbc = df[(df['avisitn'] > 0) & (df['saffl'] == 'Y') & (df['paramcd'].isin([first_val.get(), second_val.get()]))]
@@ -76,15 +75,16 @@ def scatter_plot(df: DataFrame, df2: DataFrame, first_val, second_val):
     return fig
 
 def plot_series(df: DataFrame, subjid, first_val, second_val):
+    
     if first_val.get() == second_val.get():
-        return {
-            'data': [],
-            'layout': {
-                'annotations': [{'text': 'Please choose different values for the two dropdowns.', 'showarrow': False, 'x': 2.5, 'y': 2.5, 'font': {'size': 16,}}],
-                'xaxis': {'showline': False,'showgrid': False,'zeroline': False,'showticklabels': False,'title': ''},
-                'yaxis': {'showline': False,'showgrid': False,'zeroline': False,'showticklabels': False,'title': ''}
-            }
-        }
+        fig = go.Figure()
+        # Add a red cross symbol in the middle
+        fig.add_annotation(x=2.5, y=2.5, text="\u274C",font=dict(size=100),showarrow=False,)
+        fig.add_annotation(x=2.5, y=4, text="Please select two different Parameter Categories ", font=dict(color="#115667", size=24), showarrow=False)
+        # Set layout properties
+        fig.update_layout(xaxis=dict(visible=False),yaxis=dict(visible=False),plot_bgcolor="white",)
+        return fig
+        
 
     filtered_raw = df[(df["paramcd"].isin([first_val.get(), second_val.get()])) & 
                        (df["avisitn"] >= 0) & (df["saffl"] == "Y")]
@@ -367,7 +367,10 @@ def swimmer_plot(df: DataFrame, df2: DataFrame, aedecod):
 
     # Сортируем DataFrame по столбцу 'bar_end' в обратном порядке
     sorted_df = PrePlot2.sort_values(by='bar_end', ascending=False)
-    # sorted_df.loc[(sorted_df["endPoint1"] == "FILLEDARROW") | (sorted_df["endPoint2"] == "FILLEDARROW"), "barEndPointr"] = "FILLEDARROW"
+    if "endPoint2" in sorted_df.columns:
+        sorted_df.loc[(sorted_df["endPoint1"] == "FILLEDARROW") | (sorted_df["endPoint2"] == "FILLEDARROW"), "barEndPointr"] = "FILLEDARROW"
+    else:
+        sorted_df.loc[(sorted_df["endPoint1"] == "FILLEDARROW"), "barEndPointr"] = "FILLEDARROW"
 
     # Строим график
     fig = px.bar(sorted_df, x="bar_end", y="usubjid", color="trta", color_discrete_sequence=colors,orientation="h",
@@ -394,7 +397,7 @@ def swimmer_plot(df: DataFrame, df2: DataFrame, aedecod):
         fig.add_trace(go.Scatter(
             x=ae_end_values, y=[usubjid], mode='markers', name=PrePlot3["AeSev"][PrePlot3["usubjid"] == usubjid].iloc[0],  
             marker=dict(symbol='diamond', size=size, color = colorts_triangle[PrePlot3["AeSev"][PrePlot3["usubjid"] == usubjid].iloc[0]]),
-            showlegend=False
+            showlegend=False, legendgroup="group"
         ))
         
     for usubjid in PrePlot3["usubjid"]:
@@ -408,7 +411,7 @@ def swimmer_plot(df: DataFrame, df2: DataFrame, aedecod):
                 mode='lines',
                 name=f'Line for {usubjid}',
                 line=dict(color=colorts_triangle[ae_sev], width=1),
-                showlegend=False
+                showlegend=False, legendgroup="group"
             ))
 
     for i, trt in enumerate(sorted_df["trta"].unique()):
