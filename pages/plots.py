@@ -427,7 +427,7 @@ def swimmer_plot(df: DataFrame, df2: DataFrame, aedecod):
         xaxis_title="",yaxis=dict(title ="",showticklabels=False, showgrid=True,ticks="outside",tickson="boundaries",ticklen=3),
         xaxis = dict(showgrid=True,ticks="outside",tickson="boundaries",ticklen=3),template = "simple_white",
         legend = dict(title = "<b>Treatment</b>",groupclick="toggleitem",font = dict(size = 12, color = "black",family="Balto"), bordercolor = "black", borderwidth = 1),
-        margin=dict(b=100),
+        margin=dict(b=100),dragmode=False
     )
 
 
