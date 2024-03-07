@@ -20,7 +20,7 @@ def scatter_plot(df: DataFrame, df2: DataFrame, first_val, second_val):
         fig.add_annotation(x=2.5, y=2.5, text="\u274C",font=dict(size=100),showarrow=False,)
         fig.add_annotation(x=2.5, y=4, text="Please select two different Parameter Categories ", font=dict(color="#115667", size=24), showarrow=False)
         # Set layout properties
-        fig.update_layout(xaxis=dict(visible=False),yaxis=dict(visible=False),plot_bgcolor="white",)
+        fig.update_layout(xaxis=dict(visible=False),yaxis=dict(visible=False),plot_bgcolor="white",dragmode=False)
         return fig
 
     # Filtering data
@@ -82,7 +82,7 @@ def plot_series(df: DataFrame, subjid, first_val, second_val):
         fig.add_annotation(x=2.5, y=2.5, text="\u274C",font=dict(size=100),showarrow=False,)
         fig.add_annotation(x=2.5, y=4, text="Please select two different Parameter Categories ", font=dict(color="#115667", size=24), showarrow=False)
         # Set layout properties
-        fig.update_layout(xaxis=dict(visible=False),yaxis=dict(visible=False),plot_bgcolor="white",)
+        fig.update_layout(xaxis=dict(visible=False),yaxis=dict(visible=False),plot_bgcolor="white",dragmode=False)
         return fig
         
 
