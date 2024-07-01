@@ -47,7 +47,7 @@ To run the application, execute the following command:
 ```python
 python -m shiny run 
 ```
-Open a web browser and go to [http://localhost:5000](http://127.0.0.1:8000) to see the application in action.
+Open a web browser and go to [http://127.0.0.1:8000](http://127.0.0.1:8000) to see the application in action.
 
 ## Features
 
