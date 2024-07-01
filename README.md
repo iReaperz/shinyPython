@@ -71,13 +71,13 @@ You can check the active demo by following this link:
 https://simonyannoy.shinyapps.io/clinical_trials_plots/
 
 
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)
+
 ## Authors
 
 - [Git](https://github.com/iReaperz)
 - [LinkedIn](https://www.linkedin.com/in/noy-simonyan-888683266/)
 
-
-## License
-
-[MIT](https://choosealicense.com/licenses/mit/)
 
