@@ -45,7 +45,7 @@ To install and run the project, follow these steps:
 
 To run the application, execute the following command:
 ```python
-python app.py
+shiny app.py
 ```
 Open a web browser and go to http://localhost:5000 to see the application in action.
 
